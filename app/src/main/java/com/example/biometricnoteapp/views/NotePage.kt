@@ -15,9 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.biometricnoteapp.components.NoteCard
+import com.example.biometricnoteapp.models.Note
 
 @Composable
-fun NotesPage(onNoteClick: (String, String) -> Unit) {
+fun NotesPage(onNoteClick: (String) -> Unit, notes: List<Note>) {
     Scaffold(
         topBar = {
             Row(
@@ -40,14 +41,10 @@ fun NotesPage(onNoteClick: (String, String) -> Unit) {
                 .padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            NoteCard("Grocery List", "Milk, eggs, bread, butter") {
-                onNoteClick("Grocery List", "Milk, eggs, bread, butters")
-            }
-            NoteCard("Meeting Notes", "Discuss Q2 goals with team") {
-                onNoteClick("Meeting Notes", "Discuss Q2 goals with team")
-            }
-            NoteCard("Ideas", "App for tracking daily habits") {
-                onNoteClick("Ideas", "App for tracking daily habits")
+            notes.forEach { note ->
+                NoteCard(note.title, note.text) {
+                    onNoteClick(note.id)
+                }
             }
         }
     }
