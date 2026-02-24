@@ -2,6 +2,8 @@ package com.example.biometricnoteapp.services;
 
 import java.io.*;
 import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NoteAccess {
 
@@ -34,6 +36,21 @@ public class NoteAccess {
         catch (ClassNotFoundException e) {
             throw new IOException("Note class not found", e);
         }
+    }
+
+    public List<Note> readAllNotes() throws IOException {
+        List<Note> notes = new ArrayList<>();
+
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
+            for (Path filePath : stream) {
+                if (Files.isRegularFile(filePath)) {
+                    String filename = filePath.getFileName().toString();
+                    notes.add(readNote(filename));
+                }
+            }
+        }
+
+        return notes;
     }
 
     public void writeNote(Note note) throws IOException {
