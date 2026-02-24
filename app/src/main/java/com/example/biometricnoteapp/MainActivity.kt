@@ -3,45 +3,37 @@ package com.example.biometricnoteapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.biometricnoteapp.ui.theme.BiometricNoteAppTheme
-
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.example.biometricnoteapp.views.NoteDetailPage
+import com.example.biometricnoteapp.views.NotesPage
+import com.example.biometricnoteapp.data.sampleNotes
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            BiometricNoteAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+            val navController = rememberNavController()
+
+            // NEED A READ ALL NOTES THING HERE
+            NavHost(navController, startDestination = "notes") {
+                composable("notes") {
+                    NotesPage(
+                        notes = sampleNotes,
+                        onNoteClick = { noteId ->
+                            navController.navigate("detail/$noteId")
+                        }
+                    )
+                }
+                composable("detail/{noteId}") { backStackEntry ->
+                    val noteId = backStackEntry.arguments?.getString("noteId") ?: "";
+
+                    NoteDetailPage(
+                        noteId = noteId,
+                        onBack = { navController.popBackStack() }
                     )
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    BiometricNoteAppTheme {
-        Greeting("Android")
     }
 }
