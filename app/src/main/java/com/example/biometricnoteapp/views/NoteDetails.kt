@@ -16,8 +16,8 @@ import com.example.biometricnoteapp.data.sampleNotes
 @Composable
 fun NoteDetailPage(noteId: String, onBack: () -> Unit) {
     if (noteId == "") {Text("Note note found"); return;}
-
-    val note : Note = sampleNotes.find { it.id == noteId } ?: return// replace with get notes
+    // READ STUFF
+    val note : Note = sampleNotes.find { it.id == noteId } ?: return
 
     // these are kinda like react useRef hook
     var editedTitle by remember { mutableStateOf(note.title) }
@@ -40,6 +40,17 @@ fun NoteDetailPage(noteId: String, onBack: () -> Unit) {
                 isEditing = !isEditing
             }) {
                 Text(if (isEditing) "Save" else "Edit")
+            }
+
+            TextButton(
+                onClick = {
+                    // DELETE STUFFF
+                },
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Text("Delete")
             }
         }
 

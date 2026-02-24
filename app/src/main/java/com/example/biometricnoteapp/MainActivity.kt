@@ -14,8 +14,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-            val note = "sampleNotes";
 
+            // NEED A READ ALL NOTES THING HERE
             NavHost(navController, startDestination = "notes") {
                 composable("notes") {
                     NotesPage(
