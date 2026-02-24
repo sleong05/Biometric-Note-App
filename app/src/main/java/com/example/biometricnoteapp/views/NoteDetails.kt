@@ -9,19 +9,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.biometricnoteapp.models.Note
+import com.example.biometricnoteapp.models.KotlinNote
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import com.example.biometricnoteapp.data.sampleNotes
+import com.example.biometricnoteapp.data.sampleKotlinNotes
+import com.example.biometricnoteapp.services.NoteAccess
+import com.example.biometricnoteapp.models.Note
+
 @Composable
 fun NoteDetailPage(noteId: String, onBack: () -> Unit) {
     if (noteId == "") {Text("Note note found"); return;}
     // READ STUFF
-    val note : Note = sampleNotes.find { it.id == noteId } ?: return
+    val kotlinNote : KotlinNote = sampleKotlinNotes.find { it?.id == noteId } ?: return
 
     // these are kinda like react useRef hook
-    var editedTitle by remember { mutableStateOf(note.title) }
-    var editedText by remember { mutableStateOf(note.text) }
+    var editedTitle by remember { mutableStateOf(kotlinNote.title) }
+    var editedText by remember { mutableStateOf(kotlinNote.text) }
     var isEditing by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
@@ -35,7 +38,8 @@ fun NoteDetailPage(noteId: String, onBack: () -> Unit) {
             TextButton(onClick = onBack) { Text("← Back") }
             TextButton(onClick = {
                 if (isEditing) {
-                    // PUT SAVE STUFF HERE!!!!!!!!! FOR NOW NOTHIGN
+                    val note = Note(editedTitle, editedText, noteId);
+                    NoteAccess.writeNote(note);
                 }
                 isEditing = !isEditing
             }) {
