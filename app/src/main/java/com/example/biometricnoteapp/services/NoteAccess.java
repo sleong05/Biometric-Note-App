@@ -1,34 +1,37 @@
 package com.example.biometricnoteapp.services;
 
+import android.content.Context;
+
 import java.io.*;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class NoteAccess {
 
-    private final Path path;
-
-    public NoteAccess() {
-        this.path = Paths.get("app/data/notes");
+    private static Path getPath(Context context) {
+        return new File(context.getFilesDir(), "data").toPath();
     }
 
-    public Note createNote(String title,
-                           String content,
-                           String filename) throws IOException {
-        Note note = new Note(title, content, filename);
 
-        Path filePath = path.resolve(filename);
+    public static Note createNote(Context context) throws IOException {
+        Path path = getPath(context);
+        Files.createDirectories(path);
 
-        if (!Files.exists(filePath)) {
-            Files.createFile(filePath);
-        }
-        writeNote(note);
+        String title = "";
+        String content = "";
+        String id = UUID.randomUUID().toString();
+
+        Note note = new Note(content, content, id);
+
+        writeNote(context, note);
         return note;
     }
 
-    public Note readNote(String filename) throws IOException {
-        Path filePath = path.resolve(filename);
+    public static Note readNote(Context context, UUID id) throws IOException {
+        Path path = getPath(context);
+        Path filePath = path.resolve(id.toString());
 
         try (ObjectInputStream in = new ObjectInputStream(Files.newInputStream(filePath))) {
             return (Note) in.readObject();
@@ -38,14 +41,16 @@ public class NoteAccess {
         }
     }
 
-    public List<Note> readAllNotes() throws IOException {
+    public List<Note> readAllNotes(Context context) throws IOException {
+        Path path = getPath(context);
+        Files.createDirectories(path);
         List<Note> notes = new ArrayList<>();
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
             for (Path filePath : stream) {
                 if (Files.isRegularFile(filePath)) {
-                    String filename = filePath.getFileName().toString();
-                    notes.add(readNote(filename));
+                    UUID id = UUID.fromString(filePath.getFileName().toString());
+                    notes.add(readNote(context, id));
                 }
             }
         }
@@ -53,7 +58,8 @@ public class NoteAccess {
         return notes;
     }
 
-    public void writeNote(Note note) throws IOException {
+    public static void writeNote(Context context, Note note) throws IOException {
+        Path path = getPath(context);
         Path filePath = path.resolve(note.getFilename());
 
         try (ObjectOutputStream out = new ObjectOutputStream(Files.newOutputStream(filePath))) {
