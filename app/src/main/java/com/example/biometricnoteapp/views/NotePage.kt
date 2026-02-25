@@ -14,15 +14,39 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.biometricnoteapp.components.NoteCard
-import com.example.biometricnoteapp.models.KotlinNote
-
+import com.example.biometricnoteapp.models.Note
+import com.example.biometricnoteapp.services.NoteAccess
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.IOException
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 @Composable
-fun NotesPage(onNoteClick: (String) -> Unit, kotlinNotes: List<KotlinNote>) {
+fun NotesPage(onNoteClick: (String) -> Unit) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    var notes by remember { mutableStateOf<List<Note>>(emptyList()) }
+
+    // Load notes on first composition
+    LaunchedEffect(Unit) {
+        notes = withContext(Dispatchers.IO) {
+            NoteAccess.readAllNotes(context)
+        }
+    }
+
+
     Scaffold(
         topBar = {
             Row(
@@ -41,7 +65,19 @@ fun NotesPage(onNoteClick: (String) -> Unit, kotlinNotes: List<KotlinNote>) {
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
+                scope.launch {
+                    try {
+                        withContext(Dispatchers.IO) {
+                            NoteAccess.createNote(context)
+                        }
 
+                        notes = withContext(Dispatchers.IO) {
+                            NoteAccess.readAllNotes(context)
+                        }
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                }
             }) {
                 Icon(Icons.Default.Add, contentDescription = "Add Note")
             }
@@ -52,8 +88,8 @@ fun NotesPage(onNoteClick: (String) -> Unit, kotlinNotes: List<KotlinNote>) {
                 .padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            kotlinNotes.forEach { note ->
-                NoteCard(note.title, note.text) {
+            notes.forEach { note ->
+                NoteCard(note.title, note.content) {
                     onNoteClick(note.id)
                 }
             }

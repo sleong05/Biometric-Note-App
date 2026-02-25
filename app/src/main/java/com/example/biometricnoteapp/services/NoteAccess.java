@@ -24,15 +24,15 @@ public class NoteAccess {
         String content = "";
         String id = UUID.randomUUID().toString();
 
-        Note note = new Note(content, content, id);
+        Note note = new Note(title, content, id);
 
         writeNote(context, note);
         return note;
     }
 
-    public static Note readNote(Context context, UUID id) throws IOException {
+    public static Note readNote(Context context, String id) throws IOException {
         Path path = getPath(context);
-        Path filePath = path.resolve(id.toString());
+        Path filePath = path.resolve(id);
 
         try (ObjectInputStream in = new ObjectInputStream(Files.newInputStream(filePath))) {
             return (Note) in.readObject();
@@ -42,7 +42,7 @@ public class NoteAccess {
         }
     }
 
-    public List<Note> readAllNotes(Context context) throws IOException {
+    public static List<Note> readAllNotes(Context context) throws IOException {
         Path path = getPath(context);
         Files.createDirectories(path);
         List<Note> notes = new ArrayList<>();
@@ -50,7 +50,7 @@ public class NoteAccess {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
             for (Path filePath : stream) {
                 if (Files.isRegularFile(filePath)) {
-                    UUID id = UUID.fromString(filePath.getFileName().toString());
+                    String id = filePath.getFileName().toString();
                     notes.add(readNote(context, id));
                 }
             }
@@ -61,7 +61,7 @@ public class NoteAccess {
 
     public static void writeNote(Context context, Note note) throws IOException {
         Path path = getPath(context);
-        Path filePath = path.resolve(note.getFilename());
+        Path filePath = path.resolve(note.getId());
 
         try (ObjectOutputStream out = new ObjectOutputStream(Files.newOutputStream(filePath))) {
             out.writeObject(note);

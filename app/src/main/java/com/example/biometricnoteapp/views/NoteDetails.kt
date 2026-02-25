@@ -3,6 +3,7 @@ package com.example.biometricnoteapp.views
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -11,21 +12,48 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.biometricnoteapp.models.KotlinNote
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import com.example.biometricnoteapp.data.sampleKotlinNotes
+import androidx.compose.ui.platform.LocalContext
 import com.example.biometricnoteapp.services.NoteAccess
 import com.example.biometricnoteapp.models.Note
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.IOException
 
 @Composable
 fun NoteDetailPage(noteId: String, onBack: () -> Unit) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
     if (noteId == "") {Text("Note note found"); return;}
-    // READ STUFF
-    val kotlinNote : KotlinNote = sampleKotlinNotes.find { it?.id == noteId } ?: return
 
     // these are kinda like react useRef hook
-    var editedTitle by remember { mutableStateOf(kotlinNote.title) }
-    var editedText by remember { mutableStateOf(kotlinNote.text) }
+    var editedTitle by remember { mutableStateOf("") }
+    var editedText by remember { mutableStateOf("") }
     var isEditing by remember { mutableStateOf(false) }
+    var isLoaded by remember { mutableStateOf(true) }
+    LaunchedEffect(noteId) {
+        try {
+            val loaded = withContext(Dispatchers.IO) {
+                NoteAccess.readNote(context, noteId)
+            }
+
+            editedTitle = loaded.title
+            editedText = loaded.content
+            isLoaded = true
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+
+    if (!isLoaded) {
+        Text("Loading...")
+        return
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -38,8 +66,17 @@ fun NoteDetailPage(noteId: String, onBack: () -> Unit) {
             TextButton(onClick = onBack) { Text("← Back") }
             TextButton(onClick = {
                 if (isEditing) {
-                    val note = Note(editedTitle, editedText, noteId);
-                    NoteAccess.writeNote(note);
+                    scope.launch {
+                        try {
+                            val note = withContext(Dispatchers.IO) {
+                                var note: Note = Note(editedTitle, editedText, noteId)
+                                NoteAccess.writeNote(context, note)
+                            }
+                            // update UI here
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                        }
+                    }
                 }
                 isEditing = !isEditing
             }) {

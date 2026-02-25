@@ -15,6 +15,6 @@ public class Note implements Serializable {
 
     public String getTitle() { return title; }
     public String getContent() { return content; }
-    public String getFilename() { return id; }
+    public String getId() { return id; }
 
 }
