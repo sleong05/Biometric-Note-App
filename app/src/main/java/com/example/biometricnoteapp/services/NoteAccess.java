@@ -1,5 +1,6 @@
 package com.example.biometricnoteapp.services;
 
+import com.example.biometricnoteapp.models.Note;
 import android.content.Context;
 
 import java.io.*;
