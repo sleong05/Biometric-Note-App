@@ -1,4 +1,4 @@
-package com.example.biometricnoteapp.services;
+package com.example.biometricnoteapp.models;
 
 import java.io.Serializable;
 public class Note implements Serializable {

@@ -1,6 +1,6 @@
 package com.example.biometricnoteapp.models
 
-data class Note(
+data class KotlinNote(
     val id: String,
     val title: String,
     val text: String

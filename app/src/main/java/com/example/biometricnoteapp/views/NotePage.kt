@@ -6,6 +6,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -15,10 +19,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.biometricnoteapp.components.NoteCard
-import com.example.biometricnoteapp.models.Note
+import com.example.biometricnoteapp.models.KotlinNote
 
 @Composable
-fun NotesPage(onNoteClick: (String) -> Unit, notes: List<Note>) {
+fun NotesPage(onNoteClick: (String) -> Unit, kotlinNotes: List<KotlinNote>) {
     Scaffold(
         topBar = {
             Row(
@@ -35,13 +39,20 @@ fun NotesPage(onNoteClick: (String) -> Unit, notes: List<Note>) {
                 )
             }
         },
+        floatingActionButton = {
+            FloatingActionButton(onClick = {
+
+            }) {
+                Icon(Icons.Default.Add, contentDescription = "Add Note")
+            }
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            notes.forEach { note ->
+            kotlinNotes.forEach { note ->
                 NoteCard(note.title, note.text) {
                     onNoteClick(note.id)
                 }

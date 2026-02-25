@@ -8,7 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.biometricnoteapp.views.NoteDetailPage
 import com.example.biometricnoteapp.views.NotesPage
-import com.example.biometricnoteapp.data.sampleNotes
+import com.example.biometricnoteapp.data.sampleKotlinNotes
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
             NavHost(navController, startDestination = "notes") {
                 composable("notes") {
                     NotesPage(
-                        notes = sampleNotes,
+                        kotlinNotes = sampleKotlinNotes,
                         onNoteClick = { noteId ->
                             navController.navigate("detail/$noteId")
                         }
