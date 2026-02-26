@@ -67,4 +67,12 @@ public class NoteAccess {
             out.writeObject(note);
         }
     }
+
+    public static void deleteNote(Context context, Note note) throws IOException {
+        Path path = getPath(context);
+        Path filePath = path.resolve(note.getId());
+
+        Files.deleteIfExists(filePath);
+
+    }
 }
