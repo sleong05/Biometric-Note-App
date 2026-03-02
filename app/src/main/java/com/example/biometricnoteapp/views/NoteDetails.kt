@@ -72,7 +72,6 @@ fun NoteDetailPage(noteId: String, onBack: () -> Unit) {
                                 var note: Note = Note(editedTitle, editedText, noteId)
                                 NoteAccess.writeNote(context, note)
                             }
-                            // update UI here
                         } catch (e: IOException) {
                             e.printStackTrace()
                         }
@@ -85,7 +84,8 @@ fun NoteDetailPage(noteId: String, onBack: () -> Unit) {
 
             TextButton(
                 onClick = {
-                    // DELETE STUFFF
+                    NoteAccess.deleteNote(context, noteId)
+                    onBack();
                 },
                 colors = ButtonDefaults.textButtonColors(
                     contentColor = MaterialTheme.colorScheme.error
