@@ -6,15 +6,25 @@ public class Note implements Serializable {
     private final String title;
     private final String content;
     private final String id;
+    private final byte[] image;
+
+    public Note(String title, String content, String id, byte[] image) {
+        this.title = title;
+        this.content = content;
+        this.id = id;
+        this.image = image;
+    }
 
     public Note(String title, String content, String id) {
         this.title = title;
         this.content = content;
         this.id = id;
+        this.image = null;
     }
 
     public String getTitle() { return title; }
     public String getContent() { return content; }
     public String getId() { return id; }
+    public byte[] getImage() {return image;}
 
 }
