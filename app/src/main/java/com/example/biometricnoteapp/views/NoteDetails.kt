@@ -151,27 +151,30 @@ fun NoteDetailPage(noteId: String, onBack: () -> Unit) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            imageBytes?.let { bytes ->
+                val bitmap = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = androidx.compose.ui.Alignment.Center
+                ) {
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = "Note photo",
+                        modifier = Modifier.heightIn(max = 200.dp)
+                    )
+                }
+            }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.Center
             ) {
                 Button(onClick = {
                     permissionLauncher.launch(android.Manifest.permission.CAMERA)
                 }) {
-                    Text("Take Photo")
+                    Text(if (imageBytes == null) "Take Photo" else "Change Photo")
                 }
             }
-        }
-
-        imageBytes?.let { bytes ->
-            val bitmap = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-            Image(
-                bitmap = bitmap.asImageBitmap(),
-                contentDescription = "Note photo",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 200.dp)
-            )
         }
     }
 }
