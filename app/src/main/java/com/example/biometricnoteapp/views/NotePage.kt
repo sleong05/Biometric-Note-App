@@ -46,7 +46,6 @@ fun NotesPage(onNoteClick: (String) -> Unit) {
         }
     }
 
-
     Scaffold(
         topBar = {
             Row(

@@ -44,7 +44,8 @@ fun NoteDetailPage(noteId: String, onBack: () -> Unit) {
     var imageBytes by remember { mutableStateOf<ByteArray?>(null) }
 
     val photoUri = remember {
-        val file = File.createTempFile("note_photo", ".jpg", context.cacheDir)
+        val photoDir = File(context.cacheDir, "photos").apply { mkdirs() }
+        val file = File.createTempFile("note_photo", ".jpg", photoDir)
         FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
     }
 
@@ -60,7 +61,7 @@ fun NoteDetailPage(noteId: String, onBack: () -> Unit) {
             }
 
             // make sure the files dont sit temporarily in the storage
-            val file = File(context.cacheDir, photoUri.lastPathSegment ?: "")
+            val file = File(File(context.cacheDir, "photos"), photoUri.lastPathSegment ?: "")
             file.delete()
         }
     }
